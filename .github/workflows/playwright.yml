@@ -1,0 +1,31 @@
+name: Play2 Tests Every 5 Min
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - name: Install
+        run: npm install
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+      - name: Run tests
+        run: npx playwright test tests/todo.demo1.spec.ts --project=chromium
+      - name: Send email
+        if: always()
+        uses: dawidd6/action-send-mail@v4
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "Play2 Test ${{ job.status }}"
+          to: rahulkore15@gmail.com
+          from: rahulkore15@gmail.com
+          body: "Status: ${{ job.status }} Logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
