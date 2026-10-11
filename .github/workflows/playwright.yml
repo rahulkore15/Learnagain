@@ -1,8 +1,13 @@
 name: Play2 Tests Every 5 Min
 on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
   schedule:
     - cron: '*/5 * * * *'
-  workflow_dispatch:
+
 jobs:
   test:
     runs-on: ubuntu-latest
